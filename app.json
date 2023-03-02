@@ -1,5 +1,15 @@
 {
   "expo": {
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"],
+
+    "splash": {
+      "image": "./src/assets/Splash.png",
+            "backgroundColor": "white",
+                "resizeMode": "contain",
+                "width": "50%"
+
+
+    },
     "name": "blank",
     "slug": "blank",
     "version": "1.0.0",
