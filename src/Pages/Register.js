@@ -1,7 +1,7 @@
 import NavBar from "../components/NavBar";
 import { Ionicons } from "@expo/vector-icons";
 import { authService } from "../Services/AuthService";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { FirebaseRecaptchaVerifierModal,FirebaseRecaptchaBanner } from "expo-firebase-recaptcha";
 import {firebaseConfig} from "../config/firebase"
 import {
   StyleSheet,
@@ -13,23 +13,38 @@ import {
 } from "react-native";
 import React, { useState, useRef } from "react";
 import PhoneInput from "react-native-phone-number-input";
+
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView as Wrapper}  from "react-native-safe-area-context";
 export default function ({ navigation }) {
   const [value, setValue] = useState("");
   const recaptchaVerifier = React.useRef(null);
+  const [formattedValue, setFormattedValue] = useState("");
 
   const phoneInput = useRef(null);
   const [text, onChangeText] = React.useState("");
 
   return (
+    <SafeAreaProvider>
+    <Wrapper
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+      }}
+    >
     <View style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}>
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
+        androidHardwareAccelerationDisabled
+        // attemptInvisibleVerification={true} 
       />
       <NavBar
         title=""
         icon={<Ionicons name="help-circle-outline" size={24} color="black" />}
         navigation={navigation}
+        alert={true}
+        alertText="Use your phone number to sing in"
       />
       <Header />
       <View
@@ -37,30 +52,7 @@ export default function ({ navigation }) {
           flex: 2,
         }}
       >
-        <SafeAreaView>
-          <Text
-            style={{
-              color: "#5B667A",
-              fontSize: 16,
-              fontWeight: "500",
-            }}
-          >
-            Email
-          </Text>
-          <TextInput
-            onChangeText={onChangeText}
-            value={text}
-            cursorColor="black "
-            placeholder="example@example.dz"
-            keyboardType="email-adress"
-            style={{
-              borderBottomColor: "#BAC3D2",
-              borderBottomWidth: 1,
-              height: 45,
-              fontFamily: "Medium",
-            }}
-          />
-        </SafeAreaView>
+       
         <SafeAreaView style={{ marginTop: 24 }}>
           <Text
             style={{
@@ -96,8 +88,13 @@ export default function ({ navigation }) {
       </View>
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={() => authService.signIn(recaptchaVerifier)}
-        style={{
+        onPress={() => 
+          {
+            console.log(formattedValue)
+            authService.signIn(formattedValue,recaptchaVerifier,navigation)
+          }}
+        
+            style={{
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
@@ -122,10 +119,13 @@ export default function ({ navigation }) {
             marginVertical: 18.5,
           }}
         >
-          Continue
+          Send Verification Code
         </Text>
       </TouchableOpacity>
     </View>
+    
+    </Wrapper>
+    </SafeAreaProvider>
   );
 }
 const Header = () => (

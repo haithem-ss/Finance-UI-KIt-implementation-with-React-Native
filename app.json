@@ -1,14 +1,20 @@
 {
   "expo": {
-    "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"],
-
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access camera."
+        }
+      ]
+    ],
     "splash": {
       "image": "./src/assets/Splash.png",
-            "backgroundColor": "white",
-                "resizeMode": "contain",
-                "width": "50%"
-
-
+      "backgroundColor": "white",
+      "resizeMode": "contain",
+      "width": "50%"
     },
     "name": "blank",
     "slug": "blank",

@@ -1,38 +1,73 @@
-import * as React from 'react';
-import * as firebase from "firebase";
-import { getAuth, signInWithPhoneNumber } from "firebase/auth";
+import * as React from "react";
+// import * as firebase from "firebase";
+import app from "../config/firebase";
+import { db } from "../config/firebase";
+import { getAuth, getApp } from "firebase/auth";
+import { doc, setDoc  } from "firebase/firestore";
 
-async function signIn(recaptchaVerifier) {
-  const phoneNumber = "+213541018963";
+import {
+  PhoneAuthProvider,
+  signInWithCredential,
+  signOut,
+} from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 
-  const auth = getAuth();
-  signInWithPhoneNumber(auth, phoneNumber, appVerifier)
-  .then((res)=>console.log(res))
-  const phoneProvider = new firebase.auth.PhoneAuthProvider();
-  const verificationId = await phoneProvider.verifyPhoneNumber(
-    phoneNumber,
-    recaptchaVerifier.current
+async function signIn(phoneNumber, recaptchaVerifier, navigation) {
+  // const app = getApp();
+  const auth = getAuth(app);
+  const phoneProvider = new PhoneAuthProvider(auth);
+  console.log(phoneProvider);
+
+  await phoneProvider
+    .verifyPhoneNumber(phoneNumber, recaptchaVerifier.current)
+    .then((verificationCode) => {
+      console.log("verificationCode :", verificationCode);
+      navigation.navigate("Verification", {
+        code: verificationCode,
+        phoneProvider,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return;
+    });
+}
+
+async function verifyCode(navigation, verificationId, verificationCode) {
+  const auth = getAuth(app);
+  console.log({ verificationId, verificationCode });
+  const credential = PhoneAuthProvider.credential(
+    verificationId,
+    verificationCode
   );
-  console.log("verificationId : ",verificationId)
-  return verificationId
+  console.log(credential);
+  await signInWithCredential(auth, credential)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
-async function verifyCode(user, code){
-  try{
-    await user.confirm(code);
-    return true;
-  }catch(err){
-    console.log(err)
-    return false
-  }
-}
-const signUp = (email, _password) => {};
-const logout = () => {};
-export const authService = {
-  signIn,
-  signUp,
-  logout,
-  verifyCode
+const logout = () => {
+  const auth = getAuth(app);
+  signOut(auth)
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
 };
 
-const JWTTokenMock =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikx1Y2FzIEdhcmNleiIsImlhdCI6MTUxNjIzOTAyMn0.oK5FZPULfF-nfZmiumDGiufxf10Fe2KiGe9G5Njoa64";
+const createUserProfile = (email, adresse, fullName, dob, gender) => {
+  setDoc(doc(db,"users","UUID"), { email, adresse, fullName, dob, gender })
+    .then(() => {
+      console.log("Document has been added successfully");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+export const authService = {
+  signIn,
+  logout,
+  verifyCode,
+  createUserProfile
+};

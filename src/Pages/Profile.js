@@ -2,17 +2,29 @@ import { View, ScrollView, StyleSheet, Text, Image } from "react-native";
 import NavBar from "../components/NavBar";
 import { Feather } from "@expo/vector-icons";
 import Tab from "../components/Profile/Tab";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function ({ navigation }) {
   return (
-    <View style={{ backgroundColor: "white", flex: 1 }}>
-      <NavBar
-        title="Profile"
-        icon={<Feather name="edit" size={24} color="black" />}
-        navigation={navigation}
-      />
-      <Profile />
-      <Tab />
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <View style={{ backgroundColor: "white", flex: 1 }}>
+          <NavBar
+            title="Profile"
+            icon={<MaterialCommunityIcons name="logout" size={24} color="black" />}
+            navigation={navigation}
+          />
+          <Profile />
+          <Tab />
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -51,7 +63,7 @@ const ProfileStyle = StyleSheet.create({
     margin: 18,
   },
   Image: {
-    height:88,
-    width:88
-},
+    height: 88,
+    width: 88,
+  },
 });

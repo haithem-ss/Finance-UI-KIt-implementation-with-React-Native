@@ -9,7 +9,10 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import ModalComponent from "../QrCode/Modal";
+import React from "react";
 export default function ({ navigation }) {
+
   return (
     <View style={styles.container}>
       <View style={styles.infosWrapper}>
@@ -19,7 +22,7 @@ export default function ({ navigation }) {
         </View>
         <View style={styles.InfosIcons}>
           <FontAwesome name="bell-o" size={20} color="white" />
-          <TouchableOpacity onPress={()=>navigation.navigate("Profile")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
             <Image
               source={require("../../assets/profile.png")}
               style={{ marginLeft: 15 }}
@@ -27,6 +30,7 @@ export default function ({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+
       <View style={Icons.IconsWrapper}>
         <Item
           icon={<Feather name="send" size={30} color="white" />}
@@ -45,11 +49,8 @@ export default function ({ navigation }) {
           navigation={navigation}
           link="InOut"
         />
-        <Item
-          icon={<FontAwesome name="qrcode" size={30} color="white" />}
-          text={"QR Code"}
-          navigation={navigation}
-        />
+      <ModalComponent navigation={navigation}  />
+
       </View>
     </View>
   );
@@ -118,11 +119,13 @@ const Icons = StyleSheet.create({
   },
 });
 
-const Item = ({ icon, text, navigation, link }) => (
+const Item = ({ icon, text, navigation, link = null }) => (
   <View style={Icons.wrapper}>
     <TouchableOpacity
       activeOpacity={0.5}
-      onPress={() => navigation.navigate(link)}
+      onPress={() => {
+        if (link != null) navigation.navigate(link);
+      }}
       style={Icons.container}
     >
       {icon}

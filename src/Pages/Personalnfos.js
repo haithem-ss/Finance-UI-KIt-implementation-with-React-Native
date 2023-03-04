@@ -7,65 +7,132 @@ import {
   View,
   SafeAreaView,
   TextInput,
+  Alert,
+  ScrollView,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import RNPickerSelect from "react-native-picker-select";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView as Wrapper } from "react-native-safe-area-context";
+import { authService } from "../Services/AuthService";
 
 export default function ({ navigation }) {
-  return (
-    <View style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}>
-      <NavBar
-        title=""
-        icon={<Ionicons name="help-circle-outline" size={24} color="black" />}
-        navigation={navigation}
-      />
-      <Header />
-      <View
-        style={{
-          flex: 2,
-          width: "80%",
-        }}
-      >
-        <CustomInput label="Full Name" placeholder={"SAIDA Haithem"} />
-        <CustomInput
-          label="PLace Of Birth"
-          placeholder={"Constantine, Algeria"}
-        />
-        <CustomInput label="Date Of Birth" placeholder={"05-05-2002"} />
-        <CustomPicker label="Gender" placeholder={"Male"} />
-      </View>
-      <TouchableOpacity
-        activeOpacity={0.6}
-        onPress={() => navigation.navigate("Verification")}
-        style={{
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "90%",
-          backgroundColor: "#005CEE",
-          borderRadius: 12,
-          boxShadow: " 0px 4px 16px #75AFFF",
-          shadowColor: "#75AFFF",
-          shadowOffset: {
-            width: 0,
-            height: 4,
+  const [email, EmailInput] = CustomInput({
+    label: "Email",
+    placeholder: "h_saida@estin.dz",
+    type: "email-address",
+    inputMode: "email",
+  });
+  const [adresse, AdresseInput] = CustomInput({
+    label: "Current Adresse",
+    placeholder: "Constantine, Algeria",
+    inputMode: "email",
+  });
+  const [fullName, FullNameInput] = CustomInput({
+    label: "Full Name",
+    placeholder: "SAIDA Haithem",
+  });
+  const [dob, DobInput] = CustomInput({
+    label: "Date Of Birth",
+    placeholder: "05-05-2002",
+    type: "number-pad",
+  });
+  const [gender, GenderInput] = CustomPicker({
+    label: "Date Of Birth",
+    placeholder: "05-05-2002",
+  });
+  const validateData = () => {
+    if (!(email && adresse && fullName && dob && gender)) {
+      Alert.alert(
+        "Create an account",
+        "Please fill all the information in the form",
+        [
+          {
+            text: "OK",
+            style: "cancel",
           },
-          elevation: 20,
-          marginBottom: 26,
+        ],
+        {
+          cancelable: true,
+        }
+      );
+    } else {
+      authService.createUserProfile(email, adresse, fullName, dob, gender);
+    }
+  };
+  return (
+    <SafeAreaProvider>
+      <Wrapper
+        style={{
+          flex: 1,
+          backgroundColor: "white",
         }}
       >
-        <Text
-          style={{
-            color: "white",
-            fontFamily: "Medium",
-            fontSize: 18,
-            marginVertical: 18.5,
-          }}
-        >
-          Continue
-        </Text>
-      </TouchableOpacity>
-    </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View
+            style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
+          >
+            <NavBar
+              title=""
+              icon={
+                <Ionicons name="help-circle-outline" size={24} color="black" />
+              }
+              navigation={navigation}
+            />
+            <Header />
+            <View
+              style={{
+                flex: 2,
+                width: "80%",
+              }}
+            >
+              <View
+                style={{
+                  marginVertical: 25,
+                }}
+              >
+                {EmailInput}
+                {FullNameInput}
+                {DobInput}
+                {AdresseInput}
+                {GenderInput}
+              </View>
+            </View>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={validateData}
+              style={{
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "90%",
+                backgroundColor: "#005CEE",
+                borderRadius: 12,
+                boxShadow: " 0px 4px 16px #75AFFF",
+                shadowColor: "#75AFFF",
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                elevation: 20,
+                marginBottom: 26,
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontFamily: "Medium",
+                  fontSize: 18,
+                  marginVertical: 18.5,
+                }}
+              >
+                Continue
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </Wrapper>
+    </SafeAreaProvider>
   );
 }
 const Header = () => (
@@ -99,10 +166,11 @@ const HeaderStyle = StyleSheet.create({
   },
 });
 
-const CustomInput = ({ placeholder, type, label }) => {
+const CustomInput = ({ placeholder, type, label, inputMode = "text" }) => {
   const [text, onChangeText] = React.useState("");
 
-  return (
+  return [
+    text,
     <SafeAreaView style={{ marginVertical: 12 }}>
       <Text
         style={{
@@ -114,6 +182,7 @@ const CustomInput = ({ placeholder, type, label }) => {
         {label}
       </Text>
       <TextInput
+        inputMode={inputMode}
         onChangeText={onChangeText}
         value={text}
         cursorColor="black "
@@ -126,13 +195,14 @@ const CustomInput = ({ placeholder, type, label }) => {
           fontFamily: "Medium",
         }}
       />
-    </SafeAreaView>
-  );
+    </SafeAreaView>,
+  ];
 };
 const CustomPicker = ({ placeholder, type, label }) => {
   const [text, onChangeText] = React.useState("");
 
-  return (
+  return [
+    text,
     <>
       <Text
         style={{
@@ -151,7 +221,7 @@ const CustomPicker = ({ placeholder, type, label }) => {
         itemStyle={{
           backgroundColor: "#ddd",
         }}
-        onValueChange={(value) => console.log(value)}
+        onValueChange={(value) => onChangeText(value)}
         items={[
           { label: "Male", value: "Male" },
           { label: "Female", value: "Female" },
@@ -167,8 +237,6 @@ const CustomPicker = ({ placeholder, type, label }) => {
           margin: 20,
         }}
       />
-    </>
-  );
+    </>,
+  ];
 };
-
-
