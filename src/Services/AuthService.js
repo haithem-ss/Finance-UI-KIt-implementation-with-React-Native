@@ -3,7 +3,7 @@ import * as React from "react";
 import app from "../config/firebase";
 import { db } from "../config/firebase";
 import { getAuth, getApp } from "firebase/auth";
-import { doc, setDoc  } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 import {
   PhoneAuthProvider,
@@ -57,7 +57,15 @@ const logout = () => {
 };
 
 const createUserProfile = (email, adresse, fullName, dob, gender) => {
-  setDoc(doc(db,"users","UUID"), { email, adresse, fullName, dob, gender })
+  setDoc(doc(db, "users", "UUID"), {
+    email,
+    adresse,
+    fullName,
+    dob,
+    gender,
+    cards: [],
+    transactions:[],
+  })
     .then(() => {
       console.log("Document has been added successfully");
     })
@@ -69,5 +77,5 @@ export const authService = {
   signIn,
   logout,
   verifyCode,
-  createUserProfile
+  createUserProfile,
 };

@@ -12,27 +12,45 @@ import Verification from "./Pages/Verification";
 import Login from "./Pages/Login";
 import Camera from "./components/QrCode/Camera";
 import MyQrCode from "./Pages/MyQrCode";
+import Bio from "./Pages/Bio";
+
 import { ActivityIndicator, View } from "react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "./config/firebase";
 import React, { createContext } from "react";
 import { db } from "./config/firebase";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-
+import BiometricAuthService from "./Services/BiometricAuthService";
 const LoggedInStackNavigator = createNativeStackNavigator();
 const LoginStackNavigator = createNativeStackNavigator();
 const SignUpStackNavigator = createNativeStackNavigator();
 export const AppContext = createContext();
 
 export function Router() {
-  const [stack, setStack] = React.useState(undefined);
+  const Loader = () => (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <ActivityIndicator
+        style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }}
+        color="#005CEE"
+        size="large"
+      />
+    </View>
+  );
+  const [stack, setStack] = React.useState(Loader);
   const auth = getAuth(app);
   const [user, setUser] = React.useState({});
+
+  const [isAuthed, AuthComponent] = BiometricAuthService();
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const uid = user.uid;
-        console.log(db);
         const profile = await getDoc(doc(db, "users", "UUID"));
         if (profile.exists()) {
           setUser((prevState) => ({
@@ -41,10 +59,10 @@ export function Router() {
             user,
           }));
           console.log("UserInfos :", profile.data());
-          setStack("LoggedIn");
+          setStack((AuthComponent));
         } else {
           console.log("This user needs to SingUP");
-          setStack("SignUp");
+          setStack((LoginStack));
           onSnapshot(doc(db, "users", "UUID"), (profile) => {
             console.log("Current data: ", profile.data());
             setUser((prevState) => ({
@@ -55,19 +73,26 @@ export function Router() {
           });
         }
       } else {
-        setStack("LoggedOut");
+        setStack((SignUpStack));
         console.log("No user is logged in");
       }
     });
 
     return () => unsubscribe();
-  }, []); // empty dependency array ensures function is only called once on mount
+  }, []);
+  React.useEffect(()=>{
+    if (isAuthed) setStack((LoggedInStack))
+
+  },[isAuthed])
+
+  // empty dependency array ensures function is only called once on mount
 
   return (
     <>
       <AppContext.Provider value={user}>
         <NavigationContainer>
-          {stack === undefined ? (
+          {stack}
+          {/* {stack === undefined ? (
             <View
               style={{
                 flex: 1,
@@ -89,7 +114,7 @@ export function Router() {
                 <>{stack === "LoggedIn" ? <LoggedInStack /> : <LoginStack />}</>
               )}
             </>
-          )}
+          )} */}
         </NavigationContainer>
       </AppContext.Provider>
     </>
@@ -138,6 +163,7 @@ function LoggedInStack() {
   return (
     <>
       <LoggedInStackNavigator.Navigator initialRouteName="Home">
+
         <LoggedInStackNavigator.Screen
           name="Home"
           options={{
@@ -158,16 +184,7 @@ function LoggedInStack() {
           }}
           component={Camera}
         />
-        <LoginStackNavigator.Screen
-          name="Login"
-          options={{
-            headerShown: false,
-            presentation: "modal",
-            animationTypeForReplace: "push",
-            animation: "slide_from_right",
-          }}
-          component={Login}
-        />
+
 
         <LoginStackNavigator.Screen
           name="MyQrCode"

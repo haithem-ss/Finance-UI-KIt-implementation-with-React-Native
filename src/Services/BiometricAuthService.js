@@ -19,12 +19,14 @@ import {
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
 
-export default function ({ navigation }) {
+export default function () {
   const [facialRecognitionAvailable, setFacialRecognitionAvailable] =
     React.useState(false);
   const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
   const [irisAvailable, setIrisAvailable] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [result, setResult] = React.useState(false);
+
   const checkSupportedAuthentication = async () => {
     const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
     if (types && types.length) {
@@ -54,7 +56,7 @@ export default function ({ navigation }) {
         requireConfirmation: true,
       });
       if (results.success) {
-        navigation.navigate("Home")
+        setResult(true)
       } 
     } catch (error) {
       
@@ -67,7 +69,7 @@ export default function ({ navigation }) {
   }, []);
 
 
-  return (
+  return [result,(
     <ImageBackground
       source={require("../assets/Splash.png")}
       resizeMode="cover"
@@ -115,16 +117,9 @@ export default function ({ navigation }) {
         </Text>
       </TouchableOpacity>
     </ImageBackground>
-  );
+  )];
 }
-const Header = () => (
-  <View style={HeaderStyle.container}>
-    <Text style={HeaderStyle.title}>Verification</Text>
-    <Text style={HeaderStyle.text}>
-      Verify the handphone number by entering the verification code{" "}
-    </Text>
-  </View>
-);
+
 const HeaderStyle = StyleSheet.create({
   container: {
     flex: 2,
@@ -159,82 +154,7 @@ const HeaderStyle = StyleSheet.create({
   },
 });
 
-const CELL_COUNT = 6;
 
-const VerificationInput = ({ navigation }) => {
-  const [value, setValue] = useState("");
-  React.useEffect(() => {
-    if (value.length === CELL_COUNT) {
-      navigation.navigate("Home");
-    }
-  }, [value]);
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
-  });
 
-  return (
-    <SafeAreaView style={styles.root}>
-      <CodeField
-        ref={ref}
-        {...props}
-        // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-        value={value}
-        onChangeText={setValue}
-        cellCount={CELL_COUNT}
-        rootStyle={styles.codeFieldRoot}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        renderCell={({ index, symbol, isFocused }) => (
-          <View style={styles.input}>
-            <Text
-              key={index}
-              style={[styles.cell, isFocused && styles.focusCell]}
-              onLayout={getCellOnLayoutHandler(index)}
-            >
-              {symbol || (isFocused ? <Cursor /> : null)}
-            </Text>
-          </View>
-        )}
-      />
-    </SafeAreaView>
-  );
-};
 
-const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  input: {
-    fontFamily: "Medium",
-    borderWidth: 1,
-    borderColor: "white",
-    textAlign: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    width: 42,
-  },
-  cell: {
-    fontFamily: "Medium",
-    textAlign: "center",
-    padding: 10,
-    color: "white",
-  },
-});
 
-const VerificationSection = ({ navigation }) => (
-  <View
-    style={{
-      flex: 1,
-    }}
-  >
-    <VerificationInput navigation={navigation} />
-    <View style={HeaderStyle.container2}>
-      <Text style={HeaderStyle.text}>Didn't recive verification code? </Text>
-      <Text style={HeaderStyle.Cta}>Resend Code </Text>
-    </View>
-  </View>
-);
