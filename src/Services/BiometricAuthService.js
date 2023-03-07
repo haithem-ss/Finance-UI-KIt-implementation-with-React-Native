@@ -1,5 +1,3 @@
-import NavBar from "../components/NavBar";
-import { Ionicons } from "@expo/vector-icons";
 import * as LocalAuthentication from "expo-local-authentication";
 
 import {
@@ -10,14 +8,6 @@ import {
   ImageBackground,
 } from "react-native";
 import React, { useState, useRef } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
 
 export default function () {
   const [facialRecognitionAvailable, setFacialRecognitionAvailable] =
@@ -56,11 +46,9 @@ export default function () {
         requireConfirmation: true,
       });
       if (results.success) {
-        setResult(true)
-      } 
-    } catch (error) {
-      
-    }
+        setResult(true);
+      }
+    } catch (error) {}
     setLoading(false);
   };
 
@@ -68,8 +56,8 @@ export default function () {
     checkSupportedAuthentication();
   }, []);
 
-
-  return [result,(
+  return [
+    result,
     <ImageBackground
       source={require("../assets/Splash.png")}
       resizeMode="cover"
@@ -116,8 +104,8 @@ export default function () {
           Authentificate
         </Text>
       </TouchableOpacity>
-    </ImageBackground>
-  )];
+    </ImageBackground>,
+  ];
 }
 
 const HeaderStyle = StyleSheet.create({
@@ -153,8 +141,3 @@ const HeaderStyle = StyleSheet.create({
     marginTop: 10,
   },
 });
-
-
-
-
-

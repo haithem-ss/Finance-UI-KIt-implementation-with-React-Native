@@ -16,7 +16,7 @@ export default NavBar = ({ title, icon, navigation, color = "white" ,alert=false
       <Text style={NavBarStyle.text}>{title}</Text>
       {title === "Card Center" ? (
         <>
-          <CustomMenu icon={icon} />
+          <CustomMenu icon={icon} navigation={navigation}/>
         </>
       ) : (
         <TouchableOpacity
@@ -66,7 +66,7 @@ const NavBarStyle = StyleSheet.create({
   },
 });
 
-const CustomMenu = ({ icon }) => {
+const CustomMenu = ({ icon,navigation }) => {
   const [visible, setVisible] = React.useState(false);
   const hideMenu = () => setVisible(false);
 
@@ -75,6 +75,7 @@ const CustomMenu = ({ icon }) => {
     <>
       <TouchableOpacity onPress={showMenu}>{icon}</TouchableOpacity>
       <Menu
+      use
         TransitionProps={{
           timeout: 0,
         }}
@@ -82,7 +83,7 @@ const CustomMenu = ({ icon }) => {
         onRequestClose={hideMenu}
         style={{ width: 200 }}
       >
-        <MenuItem onPress={hideMenu}>Issue New Card</MenuItem>
+        <MenuItem onPress={()=>navigation.navigate("NewCard")}>Issue New Card</MenuItem>
         <MenuDivider />
         <MenuItem onPress={hideMenu}>Report A probleme</MenuItem>
       </Menu>

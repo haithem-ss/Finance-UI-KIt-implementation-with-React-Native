@@ -10,10 +10,8 @@ import {
   signInWithCredential,
   signOut,
 } from "firebase/auth";
-import { useNavigation } from "@react-navigation/native";
 
 async function signIn(phoneNumber, recaptchaVerifier, navigation) {
-  // const app = getApp();
   const auth = getAuth(app);
   const phoneProvider = new PhoneAuthProvider(auth);
   console.log(phoneProvider);
@@ -56,15 +54,18 @@ const logout = () => {
     .catch((err) => console.log(err));
 };
 
-const createUserProfile = (email, adresse, fullName, dob, gender) => {
-  setDoc(doc(db, "users", "UUID"), {
+const createUserProfile = (uid,email, adresse, fullName, dob, gender,creditCard) => {
+  console.log({uid,email, adresse, fullName, dob, gender,creditCard})
+  setDoc(doc(db, "users", uid), {
     email,
     adresse,
     fullName,
     dob,
     gender,
-    cards: [],
+    cards: creditCard,
     transactions:[],
+    balence:0,
+    profilePic:null
   })
     .then(() => {
       console.log("Document has been added successfully");

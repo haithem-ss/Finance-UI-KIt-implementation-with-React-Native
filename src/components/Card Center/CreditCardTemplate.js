@@ -3,6 +3,8 @@ import Carousel from "react-native-snap-carousel";
 import React from "react";
 
 export default function () {
+
+  
   const isCarousel = React.useRef(null);
 
   return (

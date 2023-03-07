@@ -14,7 +14,6 @@ import React, { useState, useRef } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView as Wrapper } from "react-native-safe-area-context";
-import { authService } from "../Services/AuthService";
 
 export default function ({ navigation }) {
   const [email, EmailInput] = CustomInput({
@@ -57,7 +56,8 @@ export default function ({ navigation }) {
         }
       );
     } else {
-      authService.createUserProfile(email, adresse, fullName, dob, gender);
+      navigation.navigate("NewCard",{email, adresse, fullName, dob, gender})
+      // authService.createUserProfile(email, adresse, fullName, dob, gender);
     }
   };
   return (
@@ -168,7 +168,6 @@ const HeaderStyle = StyleSheet.create({
 
 const CustomInput = ({ placeholder, type, label, inputMode = "text" }) => {
   const [text, onChangeText] = React.useState("");
-
   return [
     text,
     <SafeAreaView style={{ marginVertical: 12 }}>

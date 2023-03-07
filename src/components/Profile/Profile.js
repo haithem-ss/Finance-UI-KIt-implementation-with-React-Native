@@ -1,6 +1,16 @@
 import { View, ScrollView, StyleSheet, Text, Image } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import * as Device from "expo-device";
+import React from "react";
+import { AppContext } from "../../Routes";
 export default function ({ navigation }) {
+  const data = React.useContext(AppContext);
+  const UserData = {
+    uid: data.user.uid,
+    phoneNumber: data.user.phoneNumber,
+    email: data.profile.email,
+    adresse: data.profile.adresse,
+    deviceName: Device.deviceName,
+  };
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
       <ScrollView>
@@ -12,7 +22,7 @@ export default function ({ navigation }) {
             marginHorizontal: 20,
           }}
         ></View>
-        <Item title="Account Number" value="202034038896" />
+        <Item title="Account Number" value={UserData.uid.substring(0, 20)} />
         <View
           style={{
             height: 1,
@@ -20,7 +30,7 @@ export default function ({ navigation }) {
             marginHorizontal: 20,
           }}
         ></View>
-        <Item title="Phone Number" value="+21 35 41 01 89 63" />
+        <Item title="Phone Number" value={UserData.phoneNumber} />
         <View
           style={{
             height: 1,
@@ -28,7 +38,7 @@ export default function ({ navigation }) {
             marginHorizontal: 20,
           }}
         ></View>
-        <Item title="Email" value="h_saida@estin.dz" />
+        <Item title="Email" value={UserData.email} />
         <View
           style={{
             height: 1,
@@ -52,7 +62,7 @@ export default function ({ navigation }) {
             marginHorizontal: 20,
           }}
         ></View>
-        <Item title="Adresse" value="Constantine, Algeria" />
+        <Item title="Adresse" value={UserData.adresse} />
         <View
           style={{
             height: 1,
@@ -68,7 +78,7 @@ export default function ({ navigation }) {
             marginHorizontal: 20,
           }}
         ></View>
-        <Item title="Primary Device" value="Condor P6 Pro" />
+        <Item title="Primary Device" value={UserData.deviceName} />
         <View
           style={{
             height: 1,

@@ -1,6 +1,7 @@
-import { collection, setDoc } from "firebase/firestore";
-
-async function createPayement(data) {
+import { collection, setDoc, updateDoc } from "firebase/firestore";
+import React from "react";
+import { AppContext } from "../Routes";
+async function createPayement(data, userRef) {
   // {
   //   type:"In" || "out ",
   //   reciever:"" OR sender:"",
@@ -9,16 +10,27 @@ async function createPayement(data) {
   //   dateTimeStamp: 25 Mai 2022,
   //   cardId:""
   // }
+  data["active"] = true;
+  const mydoc = doc(db, "users", "DC");
 
-  try {
-    const docRef = await setDoc(collection(db, "payements"), {
-      data,
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
+  await updateDoc(userRef, {
+    card: data,
+  })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => console.log(err));
+  // try {
+  //   const docRef = await setDoc(collection(db, "payements"), {
+  //     data,
+  //   });
+  //   console.log("Document written with ID: ", docRef.id);
+  // } catch (e) {
+  //   console.error("Error adding document: ", e);
+  // }
 }
+
+async function blockCard(uid) {}
 async function createCreditCard(data) {
   try {
     // {
@@ -30,7 +42,7 @@ async function createCreditCard(data) {
     //   Pin,
     //   status:"Active" OR "Blocked"
     // }
-    const docRef = await setDoc(collection(db), {
+    const docRef = await setDoc(collection(db, "cards"), {
       data,
     });
     console.log("Document written with ID: ", docRef.id);

@@ -2,10 +2,25 @@ import { View, ScrollView, StyleSheet, Text, Image } from "react-native";
 import NavBar from "../components/NavBar";
 import { Feather } from "@expo/vector-icons";
 import Tab from "../components/Profile/Tab";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Device from "expo-device";
+import React from "react";
+import { AppContext } from "../Routes";
+
 export default function ({ navigation }) {
+  const data = React.useContext(AppContext);
+  const UserData = {
+    fullName:data.profile.fullName,
+    uid: data.user.uid,
+    phoneNumber: data.user.phoneNumber,
+    email: data.profile.email,
+    adresse: data.profile.adresse,
+    deviceName: Device.deviceName,
+  };
+  console.log(data)
+  console.log(UserData)
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -17,10 +32,12 @@ export default function ({ navigation }) {
         <View style={{ backgroundColor: "white", flex: 1 }}>
           <NavBar
             title="Profile"
-            icon={<MaterialCommunityIcons name="logout" size={24} color="black" />}
+            icon={
+              <MaterialCommunityIcons name="logout" size={24} color="black" />
+            }
             navigation={navigation}
           />
-          <Profile />
+          <Profile infos={UserData} />
           <Tab />
         </View>
       </SafeAreaView>
@@ -28,15 +45,15 @@ export default function ({ navigation }) {
   );
 }
 
-const Profile = () => (
+const Profile = ({infos}) => (
   <View style={ProfileStyle.container}>
     <Image
       style={ProfileStyle.Image}
       source={require("../assets/profile.png")}
     />
     <View style={ProfileStyle.textContainer}>
-      <Text style={ProfileStyle.mainText}>SAIDA Haithem</Text>
-      <Text style={ProfileStyle.subText}>h_saida@estin.dz</Text>
+      <Text style={ProfileStyle.mainText}>{infos.fullName}</Text>
+      <Text style={ProfileStyle.subText}>{infos.email}</Text>
     </View>
   </View>
 );
