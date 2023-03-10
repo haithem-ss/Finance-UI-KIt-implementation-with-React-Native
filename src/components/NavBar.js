@@ -1,9 +1,16 @@
-import { View, TouchableOpacity, StyleSheet, Text ,Alert} from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Menu, MenuItem, MenuDivider } from "react-native-material-menu";
 import React from "react";
 import { authService } from "../Services/AuthService";
-export default NavBar = ({ title, icon, navigation, color = "white" ,alert=false,alertText}) => (
+export default NavBar = ({
+  title,
+  icon,
+  navigation,
+  color = "white",
+  alert = false,
+  alertText,
+}) => (
   <>
     <View style={[NavBarStyle.container, { backgroundColor: color }]}>
       <AntDesign
@@ -16,28 +23,27 @@ export default NavBar = ({ title, icon, navigation, color = "white" ,alert=false
       <Text style={NavBarStyle.text}>{title}</Text>
       {title === "Card Center" ? (
         <>
-          <CustomMenu icon={icon} navigation={navigation}/>
+          <CustomMenu icon={icon} navigation={navigation} />
         </>
       ) : (
         <TouchableOpacity
           onPress={() => {
-            if (alert)   Alert.alert(
-              'Create an account',
-              'Create a STREAM account by enterning your personal informations',
-              [
+            if (alert)
+              Alert.alert(
+                "Create an account",
+                "Create a STREAM account by enterning your personal informations",
+                [
+                  {
+                    text: "OK",
+                    style: "cancel",
+                  },
+                ],
                 {
-                  text: 'OK',
-                  style: 'cancel',
-                },
-              ],
-              {
-                cancelable: true,
-              },
-            );
-            
-            // Alert.alert(alertText)
-            else authService.logout();
-            }}
+                  cancelable: true,
+                }
+              );
+            if (title === "Profile") authService.logout();
+          }}
         >
           {icon}
         </TouchableOpacity>
@@ -66,7 +72,7 @@ const NavBarStyle = StyleSheet.create({
   },
 });
 
-const CustomMenu = ({ icon,navigation }) => {
+const CustomMenu = ({ icon, navigation }) => {
   const [visible, setVisible] = React.useState(false);
   const hideMenu = () => setVisible(false);
 
@@ -75,7 +81,7 @@ const CustomMenu = ({ icon,navigation }) => {
     <>
       <TouchableOpacity onPress={showMenu}>{icon}</TouchableOpacity>
       <Menu
-      use
+        use
         TransitionProps={{
           timeout: 0,
         }}
@@ -83,7 +89,9 @@ const CustomMenu = ({ icon,navigation }) => {
         onRequestClose={hideMenu}
         style={{ width: 200 }}
       >
-        <MenuItem onPress={()=>navigation.navigate("NewCard")}>Issue New Card</MenuItem>
+        <MenuItem onPress={() => navigation.navigate("NewCard")}>
+          Issue New Card
+        </MenuItem>
         <MenuDivider />
         <MenuItem onPress={hideMenu}>Report A probleme</MenuItem>
       </Menu>

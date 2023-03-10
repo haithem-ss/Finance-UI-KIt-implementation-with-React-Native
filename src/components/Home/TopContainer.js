@@ -11,13 +11,13 @@ import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import ModalComponent from "../QrCode/Modal";
 import React from "react";
-export default function ({ navigation }) {
+export default function ({ navigation ,balence}) {
 
   return (
     <View style={styles.container}>
       <View style={styles.infosWrapper}>
         <View style={styles.infos}>
-          <Text style={styles.mainText}>25,200 DZD</Text>
+          <Text style={styles.mainText}>{balence.toLocaleString("en-US")} DZD</Text>
           <Text style={styles.subText}>Active balence</Text>
         </View>
         <View style={styles.InfosIcons}>
@@ -40,7 +40,8 @@ export default function ({ navigation }) {
         />
         <Item
           icon={<MaterialIcons name="move-to-inbox" size={30} color="white" />}
-          text="request"
+          text="Request"
+          link="Request"
           navigation={navigation}
         />
         <Item
@@ -74,14 +75,18 @@ const styles = StyleSheet.create({
   infos: {
     flex: 1,
     color: "white",
+    fontFamily:"Medium"
   },
   mainText: {
     color: "white",
     fontSize: 30,
     fontWeight: "600",
+    fontFamily:"Medium"
+
   },
   subText: {
     color: "#9ec1f9",
+    fontFamily:"Medium"
   },
   InfosIcons: {
     flexDirection: "row",
@@ -113,6 +118,7 @@ const Icons = StyleSheet.create({
     color: "white",
     fontWeight: "500",
     marginTop: 4,
+    fontFamily:"Medium"
   },
   icon: {
     color: "white",

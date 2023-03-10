@@ -19,8 +19,6 @@ export default function ({ navigation }) {
     adresse: data.profile.adresse,
     deviceName: Device.deviceName,
   };
-  console.log(data)
-  console.log(UserData)
   return (
     <SafeAreaProvider>
       <SafeAreaView

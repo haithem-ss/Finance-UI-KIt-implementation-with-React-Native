@@ -8,15 +8,26 @@ import {
 } from "react-native";
 import NavBar from "../components/NavBar";
 import { AntDesign } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
 import React from "react";
 import VirtualKeyboard from "react-native-virtual-keyboard";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import MoneyServices from "../Services/MoneyServices";
+import { AppContext } from "../Routes";
+
 export default function ({ navigation }) {
   const [amount, NumpadComponent] = Numpad();
+  const data = React.useContext(AppContext);
+  async function handleClick() {
+    console.log("Sending Money");
+    MoneyServices.requestMoney(data.user, amount, data.updateState);
+    navigation.navigate("Congrats", {
+      message:
+        "Great news, " +
+        data.user.fullName +
+        "! Your transaction was successful! Funds transferred as instructed. Thanks for banking with us!",
+    });
+  }
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -35,30 +46,21 @@ export default function ({ navigation }) {
               navigation={navigation}
               amount={amount.toLocaleString("en-US")}
             />
-            <View
+            {/* <View
               style={{
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Text style={[AmoutStyle.subText,{fontSize:20}]}>To</Text>
-              <Text style={[AmoutStyle.mainText,{fontSize:24}]}>SAIDA Haithem</Text>
-            </View>
+              <Text style={[AmoutStyle.subText, { fontSize: 20 }]}>To</Text>
+              <Text style={[AmoutStyle.mainText, { fontSize: 24 }]}>
+                SAIDA Haithem
+              </Text>
+            </View> */}
           </View>
-          {/*<View style={{ flex: 1, backgroundColor: "#E5E5E5" }}>
-             <Contact /> 
-             <View
-              style={{
-                height: 1,
-                backgroundColor: "white",
-                marginHorizontal: 20,
-              }}
-            ></View>
-            <Category /> 
-          </View>*/}
           {NumpadComponent}
-          <ConfirmationButton />
+          <ConfirmationButton handleClick={() => handleClick()} />
         </ImageBackground>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -76,13 +78,13 @@ const Amount = ({ amount, navigation }) => (
       }}
     >
       <NavBar
-        title="Send"
-        icon={
-          <AntDesign name="filter" size={24} color="rgba(52, 52, 52, alpha)" />
-        }
+        title="Request money"
+        icon={<AntDesign name="filter" size={24} color="white" />}
         navigation={navigation}
         color="rgba(52, 52, 52, alpha)"
       />
+      <Header />
+
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text style={AmoutStyle.subText}>Amount</Text>
         <Text style={AmoutStyle.mainText}>
@@ -110,65 +112,6 @@ const AmoutStyle = StyleSheet.create({
   },
 });
 
-const Contact = () => (
-  <View style={ContactStyle.container}>
-    <Image
-      style={ContactStyle.image}
-      source={require("../assets/profile.png")}
-    ></Image>
-    <View style={{ flex: 1, justifyContent: "center", marginLeft: 20 }}>
-      <Text style={ContactStyle.subText}>SAIDA Haithem</Text>
-    </View>
-    <TouchableOpacity style={ContactStyle.button}>
-      <Entypo name="plus" size={24} color="#717E95" />
-    </TouchableOpacity>
-  </View>
-);
-const ContactStyle = StyleSheet.create({
-  container: {
-    justifyContent: "flex-start",
-    alignItems: "center",
-    flexDirection: "row",
-    margin: 20,
-  },
-  subText: {
-    color: "black",
-    fontFamily: "Medium",
-    fontSize: 16,
-    textAlign: "left",
-  },
-  mainText: {
-    color: "#94A0B4",
-    marginBottom: 4,
-    fontFamily: "Medium",
-    fontSize: 12,
-  },
-  button: {
-    backgroundColor: "white",
-    aspectRatio: 1,
-    borderRadius: 8,
-    height: 48,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  image: {
-    aspectRatio: 1,
-  },
-});
-const Category = () => (
-  <View style={ContactStyle.container}>
-    <View style={ContactStyle.button}>
-      <MaterialIcons name="category" size={24} color="#005CEE" />
-    </View>
-    <View style={{ flex: 1, justifyContent: "center", marginLeft: 20 }}>
-      <Text style={ContactStyle.mainText}>Category</Text>
-      <Text style={ContactStyle.subText}>Food</Text>
-    </View>
-    <TouchableOpacity style={ContactStyle.button}>
-      <MaterialIcons name="keyboard-arrow-down" size={28} color="#717E95" />
-    </TouchableOpacity>
-  </View>
-);
 const Numpad = () => {
   const [amount, setAmount] = React.useState("");
   return [
@@ -295,8 +238,8 @@ const Numpad = () => {
     <View
       style={{
         flex: 1,
-        alignItems:"center",
-        justifyContent:"center"
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <VirtualKeyboard
@@ -344,8 +287,9 @@ const NumpadStyle = StyleSheet.create({
     fontSize: 18,
   },
 });
-const ConfirmationButton = () => (
+const ConfirmationButton = ({ handleClick }) => (
   <TouchableOpacity
+    onPress={handleClick}
     activeOpacity={0.6}
     style={{
       alignItems: "center",
@@ -372,7 +316,37 @@ const ConfirmationButton = () => (
         marginVertical: 18.5,
       }}
     >
-      Transfer Money
+      Request Money
     </Text>
   </TouchableOpacity>
 );
+const Header = () => (
+  <View style={HeaderStyle.container}>
+    <Text style={HeaderStyle.title}>Request Money From The Bank</Text>
+    <Text style={HeaderStyle.text}>
+      Request The Amount Of Money That You Wish
+    </Text>
+  </View>
+);
+const HeaderStyle = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    color: "#293345",
+    fontFamily: "Medium",
+    fontSize: 20,
+    textAlign: "center",
+    marginBottom: 11,
+  },
+  text: {
+    color: "#717E95",
+    fontFamily: "Medium",
+    fontSize: 16,
+    textAlign: "center",
+    paddingHorizontal: 37.5,
+    lineHeight: 20,
+  },
+});

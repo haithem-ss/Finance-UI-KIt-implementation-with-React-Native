@@ -2,16 +2,16 @@ import { View, ScrollView, StyleSheet, Text, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import Chart from "./Chart";
-export default function ({navigation}) {
+export default function ({ navigation, data }) {
   return (
     <View style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
-        <Section title="Card Center" navigation={navigation}  />
-        <Section title="Moneytory" />
-        <Section title="In & Out" />
+        <Section title="Card Center" data={data} navigation={navigation} />
+        <Section title="Moneytory" data={data} />
+        <Section title="In & Out" data={data} />
 
         {/* <Chart/> */}
       </ScrollView>
@@ -27,47 +27,70 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
-const Section = ({ title,navigation }) => (
+const Section = ({ title, navigation, data }) => (
   <View style={{ paddingTop: 20 }}>
     <View style={section.arrow}>
       <Text style={section.title}>{title}</Text>
-      <MaterialIcons name="arrow-forward-ios" size={15} color="#94A0B4" 
-      onPress={() => navigation.navigate("CardCenter")}
+      <MaterialIcons
+        name="arrow-forward-ios"
+        size={15}
+        color="#94A0B4"
+        onPress={() => navigation.navigate("CardCenter")}
       />
     </View>
     <View style={section.content}>
       {title == "Card Center" && (
         <>
-          <CreditCardItem />
-          <CreditCardItem />
-          <CreditCardItem />
-          <CreditCardItem />
-          <CreditCardItem />
-          <CreditCardItem />
-          <CreditCardItem />
-          <CreditCardItem />
+          <CreditCardItem data={data} />
         </>
       )}
       {title == "In & Out" && (
         <>
-          <InOutItem otherParty="Google" amount={2000} date="25 Mars 2032" />
-          <InOutItem otherParty="Anna" amount={-1500} date="25 Mars 2032" />
+          {data.transactions.length === 0 ? (
+            <View
+              style={{
+                padding: 20,
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontFamily: "Medium",
+                  fontSize: 16,
+                }}
+              >
+                No transactions Available
+              </Text>
+            </View>
+          ) : (
+            <>
+              {data.transactions.map((transaction) => (
+                <InOutItem
+                  otherParty={transaction.sender}
+                  amount={transaction.amount}
+                  date={transaction?.date}
+                />
+              ))}
+            </>
+          )}
         </>
       )}
       {title == "Moneytory" && <Expenses />}
     </View>
   </View>
 );
-const CreditCardItem = () => (
+const CreditCardItem = ({ data }) => (
   <View style={section.creditCardItem}>
     <View style={section.icon}>
       <FontAwesome name="credit-card" size={24} color="#005CEE" />
     </View>
     <View style={section.creditCardInfos}>
-      <Text style={section.creditCardType}>Virtual Card</Text>
-      <Text style={section.creditCardNumber}>6120 4785 9630 2542</Text>
+      <Text style={section.creditCardType}>{data.cards.name}</Text>
+      <Text style={section.creditCardNumber}>{data.cards.cardNumber}</Text>
     </View>
-    <Text style={section.creditCardBalence}>24,500 DZD</Text>
+    <Text style={section.creditCardBalence}>
+      {data.balence.toLocaleString("en-US")} DZD
+    </Text>
   </View>
 );
 const Expenses = () => (
@@ -106,7 +129,6 @@ const section = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     fontFamily: "Medium",
-
   },
   content: {
     borderRadius: 20,
@@ -119,7 +141,6 @@ const section = StyleSheet.create({
     width: "100%",
     padding: 15,
     fontFamily: "Medium",
-
   },
   icon: {
     borderRadius: 10,
@@ -132,31 +153,30 @@ const section = StyleSheet.create({
   creditCardType: {
     fontSize: 15,
     fontFamily: "Medium",
-  
-},
+  },
   creditCardNumber: {
     color: "#94A0B4",
     fontSize: 10,
     fontFamily: "Medium",
-
   },
   creditCardBalencePostive: {
     color: "#19B832",
     fontWeight: "600",
     fontFamily: "Medium",
-
   },
   creditCardBalenceNegative: {
     color: "red",
     fontFamily: "Medium",
-
+    fontWeight: "600",
+  },
+  creditCardBalence: {
+    fontFamily: "Medium",
     fontWeight: "600",
   },
   creditCardInfos: {
     flex: 1,
     marginLeft: 20,
     fontFamily: "Medium",
-
   },
 });
 const ExpensesStyles = StyleSheet.create({
@@ -191,18 +211,19 @@ const ExpensesStyles = StyleSheet.create({
 const InOutItem = ({ otherParty, date, amount }) => (
   <View style={section.creditCardItem}>
     <View style={section.icon}>
-      <Text style={{color:"#005CEE",fontSize:20}}>{otherParty.charAt(0).toUpperCase()}</Text>
+      <Text style={{ color: "#005CEE", fontSize: 20, fontFamily: "Medium" }}>
+        {otherParty.charAt(0).toUpperCase()}
+      </Text>
     </View>
     <View style={section.creditCardInfos}>
       <Text style={section.creditCardType}>{otherParty}</Text>
       <Text style={section.creditCardNumber}>{date}</Text>
     </View>
-    {amount >0 && 
-    <Text style={section.creditCardBalencePostive}>{amount} DZD</Text>
-    }
-    {amount <=0 && 
-    <Text style={section.creditCardBalenceNegative}>{amount} DZD</Text>
-    }
-
+    {amount >= 0 && (
+      <Text style={section.creditCardBalencePostive}> {amount.toLocaleString("en-US")} DZD</Text>
+    )}
+    {amount <= 0 && (
+      <Text style={section.creditCardBalenceNegative}>{amount.toLocaleString("en-US")} DZD</Text>
+    )}
   </View>
 );

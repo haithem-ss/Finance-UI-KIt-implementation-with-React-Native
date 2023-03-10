@@ -2,9 +2,9 @@ import { View, StyleSheet, Image, Text, Dimensions } from "react-native";
 import Carousel from "react-native-snap-carousel";
 import React from "react";
 
-export default function () {
+export default function ({cardData}) {
 
-  
+  console.log(cardData)
   const isCarousel = React.useRef(null);
 
   return (
@@ -18,12 +18,7 @@ export default function () {
       <Carousel
         layout="default"
         ref={isCarousel}
-        data={[{
-            type:"Black"
-        },
-    {
-        type:"Blue"
-    }]}
+        data={[cardData]}
         renderItem={creditCard}
         sliderWidth={Dimensions.get("window").width}
         itemWidth={320}
@@ -52,12 +47,12 @@ const creditCard = ({ item, index }) => (
       </View>
       <View style={{ flex: 1 }}>
         <View style={CreditCard.MiddleSection}>
-          <Text style={CreditCard.MiddleSectionText}>5678 8759 6589 6254</Text>
+          <Text style={CreditCard.MiddleSectionText}>{item.cardNumber}</Text>
         </View>
         <View style={CreditCard.BottomSection}>
           <View>
-            <Text style={CreditCard.BottomSectionInfos}>SAIDA haithem</Text>
-            <Text style={CreditCard.BottomSectionInfos}>05/05/24</Text>
+            <Text style={CreditCard.BottomSectionInfos}>{item.owner}</Text>
+            <Text style={CreditCard.BottomSectionInfos}>{item.expDate}</Text>
           </View>
           <Image source={require("../../assets/Visa.png")} />
         </View>

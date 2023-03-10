@@ -2,7 +2,8 @@ import { Text, TouchableOpacity, Image, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
-export default function ({ navigation }) {
+export default function ({ route, navigation }) {
+  const { message } = route.params;
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -11,29 +12,34 @@ export default function ({ navigation }) {
           backgroundColor: "white",
         }}
       >
-        <View style={{ flex:1 , backgroundColor: "white" }}>
+        <View style={{ flex: 1, backgroundColor: "white" }}>
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <Text style={{
-                fontFamily:"Medium",
-                fontSize:20, 
-                textAlign:"center",
-            }}>
+            <Text
+              style={{
+                fontFamily: "Medium",
+                fontSize: 20,
+                textAlign: "center",
+              }}
+            >
               Congratulations!
             </Text>
-            <Text style={{
-                fontFamily:"Medium",
-                fontSize:18, 
-                textAlign:"center",
-                marginVertical:40
-            }}>
-               Your Card is Issued: Enjoy the Benefits
-              of Our Credit Card with Ease.
+            <Text
+              style={{
+                fontFamily: "Medium",
+                fontSize: 18,
+                textAlign: "center",
+                marginVertical: 40,
+                marginHorizontal:20
+              }}
+            >
+              {message}
             </Text>
-            <Image  source={require("../assets/Succes.png")} />
+            <Image source={require("../assets/Succes.png")} />
           </View>
           <TouchableOpacity
+          onPress={()=> navigation.navigate("Home")}
             activeOpacity={0.6}
             style={{
               alignItems: "center",
@@ -60,7 +66,7 @@ export default function ({ navigation }) {
                 marginVertical: 18.5,
               }}
             >
-              Continue
+              Great, Let's Get Started
             </Text>
           </TouchableOpacity>
         </View>

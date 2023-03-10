@@ -168,3 +168,86 @@ const Icons = StyleSheet.create({
     color: "white",
   },
 });
+export function ConfirmationModal({ navigation,data ,visibility,handleClose}) {
+  const parsedData=JSON.parse(data)
+  return (
+    <View style={Icons.wrapper}>
+        <Modal
+          isVisible={visibility}
+          animationIn="zoomIn"
+          animationOut="zoomOut"
+          useNativeDriver={true}
+        >
+          <View
+            style={{
+              paddingVertical:25,
+              backgroundColor: "white",
+              borderRadius: 16,
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                marginBottom: 20,
+                color: "#717E95",
+                fontSize: 20,
+                fontFamily: "Medium",
+              }}
+            >
+              Do You Want To Send Money To {parsedData?.fullName}
+            </Text>
+
+            <TouchableOpacity
+            onPress={()=>{
+              navigation.navigate("SendWithQrCode",{parsedData})
+            }}
+              style={{
+                backgroundColor: "#EEF2F8",
+                borderRadius: 16,
+                width: "90%",
+                marginHorizontal: "5%",
+              }}
+            >
+              <Text
+                style={{
+                  color: "#005CEE",
+                  fontFamily: "Medium",
+                  fontSize: 16,
+                  textAlign: "center",
+                  padding: 13,
+                }}
+              >
+                Yes, I Want To
+              </Text>
+            </TouchableOpacity>
+            <View style={{
+              marginVertical:10
+            }}></View>
+            <TouchableOpacity
+            onPress={handleClose}
+              style={{
+                backgroundColor: "#EEF2F8",
+                borderRadius: 16,
+                width: "90%",
+                marginHorizontal: "5%",
+              }}
+            >
+              <Text
+                style={{
+                  color: "#005CEE",
+                  fontFamily: "Medium",
+                  fontSize: 16,
+                  textAlign: "center",
+                  padding: 13,
+                }}
+              >
+                No, Try Again
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+        <FontAwesome name="qrcode" size={30} color="white" />
+    </View>
+  );
+}

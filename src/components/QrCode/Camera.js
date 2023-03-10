@@ -5,10 +5,13 @@ import NavBar from "../NavBar";
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native-safe-area-context";
-export default function ({ route }) {
-  const { navigation } = route.params;
+import {ConfirmationModal} from "./Modal"
+
+export default function ({ route,navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [visibility,setVisibility]=React.useState(false)
+  const [data,setDate]=useState("{}")
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -16,8 +19,12 @@ export default function ({ route }) {
     })();
   }, []);
   const handleBarCodeScanned = ({ type, data }) => {
+    console.log(data)
+    console.log(visibility)
+    setDate(data)
     setScanned(true);
-    alert(`${data}`);
+    setVisibility(true)
+    // alert(`${data}`);
   };
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
@@ -50,6 +57,14 @@ export default function ({ route }) {
           >
             Please Scan The QR Code of the recepient
           </Text>
+            <ConfirmationModal 
+            navigation={navigation}
+            data={data} 
+            visibility={visibility}
+            handleClose={
+              ()=>setVisibility(false)
+            }
+            />  
           <View style={{}}>
             <BarCodeScanner
               onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}

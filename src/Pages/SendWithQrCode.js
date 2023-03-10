@@ -15,8 +15,13 @@ import VirtualKeyboard from "react-native-virtual-keyboard";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-export default function ({ navigation }) {
+import MoneyServices from "../Services/MoneyServices"
+import { AppContext } from "../Routes";
+
+export default function ({ route,navigation }) {
+  const {parsedData}=route.params
   const [amount, NumpadComponent] = Numpad();
+  const {user,profile,updateState} = React.useContext(AppContext);
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -34,6 +39,7 @@ export default function ({ navigation }) {
             <Amount
               navigation={navigation}
               amount={amount.toLocaleString("en-US")}
+              balence={profile.balence}
             />
             <View
               style={{
@@ -43,7 +49,7 @@ export default function ({ navigation }) {
               }}
             >
               <Text style={[AmoutStyle.subText,{fontSize:20}]}>To</Text>
-              <Text style={[AmoutStyle.mainText,{fontSize:24}]}>SAIDA Haithem</Text>
+              <Text style={[AmoutStyle.mainText,{fontSize:24}]}>{parsedData?.fullName}</Text>
             </View>
           </View>
           {/*<View style={{ flex: 1, backgroundColor: "#E5E5E5" }}>
@@ -58,14 +64,14 @@ export default function ({ navigation }) {
             <Category /> 
           </View>*/}
           {NumpadComponent}
-          <ConfirmationButton />
+          <ConfirmationButton callback={()=>MoneyServices.createTransaction(user.uid,profile,parsedData,parseInt(amount),profile.balence,updateState)} />
         </ImageBackground>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
-const Amount = ({ amount, navigation }) => (
+const Amount = ({ amount, navigation,balence }) => (
   <View style={AmoutStyle.container}>
     <View
       style={{
@@ -76,7 +82,7 @@ const Amount = ({ amount, navigation }) => (
       }}
     >
       <NavBar
-        title="Send"
+        title="Send With Qr Code"
         icon={
           <AntDesign name="filter" size={24} color="rgba(52, 52, 52, alpha)" />
         }
@@ -86,7 +92,8 @@ const Amount = ({ amount, navigation }) => (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text style={AmoutStyle.subText}>Amount</Text>
         <Text style={AmoutStyle.mainText}>
-          {amount.toLocaleString("en-US")} DZD
+        {/* {amount.toLocaleString("en-US")} DZD */}
+          {amount <= balence ?<> {amount.toLocaleString("en-US")} DZD</> :<Text>You dont have money</Text>  }
         </Text>
       </View>
     </View>
@@ -155,143 +162,12 @@ const ContactStyle = StyleSheet.create({
     aspectRatio: 1,
   },
 });
-const Category = () => (
-  <View style={ContactStyle.container}>
-    <View style={ContactStyle.button}>
-      <MaterialIcons name="category" size={24} color="#005CEE" />
-    </View>
-    <View style={{ flex: 1, justifyContent: "center", marginLeft: 20 }}>
-      <Text style={ContactStyle.mainText}>Category</Text>
-      <Text style={ContactStyle.subText}>Food</Text>
-    </View>
-    <TouchableOpacity style={ContactStyle.button}>
-      <MaterialIcons name="keyboard-arrow-down" size={28} color="#717E95" />
-    </TouchableOpacity>
-  </View>
-);
+
 const Numpad = () => {
   const [amount, setAmount] = React.useState("");
   return [
     amount,
-    // <View style={NumpadStyle.container}>
-    //   <View style={NumpadStyle.row}>
-    //     <TouchableOpacity
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //       onPress={() => setAmount((exAmount) => exAmount + 1)}
-    //     >
-    //       <Text style={NumpadStyle.number}>1</Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 2)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>2</Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 3)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>3 </Text>
-    //     </TouchableOpacity>
-    //   </View>
-    //   <View style={NumpadStyle.row}>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 4)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>4 </Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 5)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>5 </Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 6)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>6 </Text>
-    //     </TouchableOpacity>
-    //   </View>
-    //   <View style={NumpadStyle.row}>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 7)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>7 </Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 8)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>8 </Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 9)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>9</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    //   <View style={NumpadStyle.row}>
-    //     <TouchableOpacity
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <View></View>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       onPress={() => setAmount((exAmount) => exAmount + 0)}
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <Text style={NumpadStyle.number}>0 </Text>
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       style={{
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       <View style={NumpadStyle.number}>
-    //         <Ionicons name="backspace-outline" size={24} color="black" />
-    //         {/* <Ionicons name="arrow-back" size={24} color="black" /> */}
-    //       </View>
-    //     </TouchableOpacity>
-    //   </View>
-    // </View>,
+   
     <View
       style={{
         flex: 1,
@@ -344,8 +220,9 @@ const NumpadStyle = StyleSheet.create({
     fontSize: 18,
   },
 });
-const ConfirmationButton = () => (
+const ConfirmationButton = ({callback}) => (
   <TouchableOpacity
+  onPress={callback}
     activeOpacity={0.6}
     style={{
       alignItems: "center",

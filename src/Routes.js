@@ -11,11 +11,13 @@ import Personalnfos from "./Pages/Personalnfos";
 import Verification from "./Pages/Verification";
 import NewCard from "./Pages/NewCard";
 import Camera from "./components/QrCode/Camera";
+import SendWithQrCode from "./Pages/SendWithQrCode"
 import MyQrCode from "./Pages/MyQrCode";
 import { ActivityIndicator, View } from "react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "./config/firebase";
 import React, { createContext } from "react";
+import Request from "./Pages/Request";
 import { db } from "./config/firebase";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import BiometricAuthService from "./Services/BiometricAuthService";
@@ -24,10 +26,9 @@ import Congrats from "./Pages/Congrats";
 const LoggedInStackNavigator = createNativeStackNavigator();
 const LoginStackNavigator = createNativeStackNavigator();
 const SignUpStackNavigator = createNativeStackNavigator();
-export const AppContext = createContext();
+export const AppContext = createContext({});
 
 export function Router() {
-
   const Loader = () => (
     <View
       style={{
@@ -45,43 +46,28 @@ export function Router() {
   );
   const [stack, setStack] = React.useState(Loader);
   const auth = getAuth(app);
-  const [user, setUser] = React.useState({});
-
+  const [user, setUser] = React.useState(null);
+  const [profile, setProfile] = React.useState(null);
   const [isAuthed, AuthComponent] = BiometricAuthService();
+
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const uid = firebaseUser.uid;
+        setUser(firebaseUser);
         const profile = await getDoc(doc(db, "users", uid));
         if (profile.exists()) {
-          setUser((prevState) => ({
-            ...prevState,
-            ["profile"]: profile.data(),
-            ["userRef"]: profile,
-            user: firebaseUser,
-          }));
-          console.log("UserInfos :", profile.data());
+          setProfile(profile.data());
           setStack(AuthComponent);
         } else {
-          console.log("This user needs to SingUP");
-          setStack(Loader)
-          setTimeout(()=>setStack(<SignUpStack />),1000)
-          
-          setUser((prevState) => ({
-            ...prevState,
-            user: firebaseUser,
-          }));
+          setStack(Loader);
+          console.log("SingUP")
+          setTimeout(() => setStack(SignUpStack), 1000);
           onSnapshot(doc(db, "users", uid), (profile) => {
-            console.log("Current data: ", profile.data());
-            setUser((prevState) => ({
-              ...prevState,
-              ["profile"]: profile.data(),
-              ["userRef"]: profile,
-            }));
-            if (profile.data()){
-
+            setProfile(profile.data());
+            if (profile.data()) {
               setStack(Loader);
-              setTimeout(()=>setStack(Congrats),1000)
+              setTimeout(() => setStack(Congrats), 1000);
               setTimeout(() => {
                 setStack(LoggedInStack);
               }, 4000);
@@ -90,8 +76,8 @@ export function Router() {
         }
       } else {
         console.log("No user is logged in");
-        setStack(Loader)
-        setTimeout(() => setStack(LoginStack),1000)
+        setStack(Loader);
+        setTimeout(() => setStack(LoginStack), 1000);
       }
     });
 
@@ -104,37 +90,22 @@ export function Router() {
     }
   }, [isAuthed]);
 
+  async function updateState(uid) {
+    console.log("Snapshot working");
+    console.log(uid)
+    const profile = await getDoc(doc(db, "users", uid));
+    if (profile.exists()) {
+      setProfile(profile.data());
+      console.log("Snapshot finished");
+    }
+  }
+
   // empty dependency array ensures function is only called once on mount
 
   return (
     <>
-      <AppContext.Provider value={user}>
-        <NavigationContainer>
-          {stack}
-          {/* {stack === undefined ? (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <ActivityIndicator
-                style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }}
-                color="#005CEE"
-                size="large"
-              />
-            </View>
-          ) : (
-            <>
-              {stack === "SignUp" ? (
-                <SignUpStack></SignUpStack>
-              ) : (
-                <>{stack === "LoggedIn" ? <LoggedInStack /> : <LoginStack />}</>
-              )}
-            </>
-          )} */}
-        </NavigationContainer>
+      <AppContext.Provider value={{ user, profile, updateState }}>
+        <NavigationContainer>{stack}</NavigationContainer>
       </AppContext.Provider>
     </>
   );
@@ -191,6 +162,36 @@ function LoggedInStack() {
             animation: "slide_from_right",
           }}
           component={Home}
+        />
+        <LoggedInStackNavigator.Screen
+          name="Congrats"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+            animationTypeForReplace: "push",
+            animation: "slide_from_right",
+          }}
+          component={Congrats}
+        />
+        <LoggedInStackNavigator.Screen
+          name="SendWithQrCode"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+            animationTypeForReplace: "push",
+            animation: "slide_from_right",
+          }}
+          component={SendWithQrCode}
+        />
+        <LoggedInStackNavigator.Screen
+          name="Request"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+            animationTypeForReplace: "push",
+            animation: "slide_from_right",
+          }}
+          component={Request}
         />
 
         <LoggedInStackNavigator.Screen
@@ -275,7 +276,7 @@ function SignUpStack() {
             animation: "slide_from_right",
           }}
         />
-        <LoggedInStackNavigator.Screen
+        <SignUpStackNavigator.Screen
           name="Congrats"
           options={{
             headerShown: false,
@@ -285,7 +286,7 @@ function SignUpStack() {
           }}
           component={Congrats}
         />
-        <LoggedInStackNavigator.Screen
+        <SignUpStackNavigator.Screen
           name="NewCard"
           options={{
             headerShown: false,

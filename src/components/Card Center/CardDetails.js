@@ -4,12 +4,12 @@ import { Feather } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function () {
+export default function ({cardData}) {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, backgroundColor: "white" }}>
-      <Item title="Active Balence" amount="2,785,961" menu={false} />
-      <Item title="Single Purchase Limit" amount="10,000" menu={true} />
-      <Item title="ATM Withdrawn Limit" amount="150,000" menu={true} />
+      <Item title="Active Balence" amount={cardData.balence.toLocaleString("en-US")} menu={false} />
+      <Item title="Single Purchase Limit" amount={cardData.cards.ATHWithdrawLimit.toLocaleString("en-US")} menu={true} />
+      <Item title="ATM Withdrawn Limit" amount={cardData.cards.ATHWithdrawLimit.toLocaleString("en-US")} menu={true} />
       <ActionItem action="Change PIN" icon={<MaterialIcons name="security" size={24} color="#005CEE" />}/>
       <ActionItem action="Block Card" icon={<Entypo name="block" size={24} color="#005CEE" />}/>
       <ActionItem action="Change Limit" icon={<AntDesign name="creditcard" size={24} color="#005CEE" />}/>
